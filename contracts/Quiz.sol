@@ -59,10 +59,10 @@ contract Quiz {
                 _hits += 1;
         }
         studentAnswers[msg.sender] = StudentAnswer({
-        answers : _answers,
-        name : _name,
-        id : _id,
-        hits : _hits
+            answers : _answers,
+            name : _name,
+            id : _id,
+            hits : _hits
         });
         students.push(msg.sender);
     }
