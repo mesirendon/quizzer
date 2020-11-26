@@ -2,7 +2,7 @@ import Vue from 'vue';
 import * as constants from '@/store/constants';
 import HubContract from '@/contracts/Hub.json';
 
-const address = '0xe80d764da4AC5e5Cbcb37A92421d7794993E8f2e';
+const address = '0xfB6cfc9100Cf04EaC11Bf0aF9eEeA9b8Aa8D98Fe';
 
 const state = {
   quizzes: [],
