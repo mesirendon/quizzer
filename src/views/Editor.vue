@@ -17,9 +17,9 @@
           <strong>{{ question.statement }}:</strong>
           <ul>
             <template v-for="(option, jdx) in question.options">
-            <li :key="`qo-${idx}-${jdx}`" :class="{'text-success': answers[idx] === jdx}">
-              {{ option }}
-            </li>
+              <li :key="`qo-${idx}-${jdx}`" :class="{'text-success': answers[idx] === jdx}">
+                {{ option }}
+              </li>
             </template>
           </ul>
           <button class="badge badge-primary badge-pill" @click="removeQuestion(idx)">X</button>
@@ -31,7 +31,7 @@
         <button type="button" class="btn btn-primary" @click="newQuestion">Nueva pregunta</button>
       </div>
       <div class="col">
-        <button type="button" class="btn btn-danger" @click="newQuestion">Enviar quiz</button>
+        <button type="button" class="btn btn-danger" @click="newQuiz">Enviar quiz</button>
       </div>
     </div>
     <form class="border border-secondary m-3 p-3 rounded" v-if="form" @submit.prevent>
@@ -52,7 +52,8 @@
       <div class="form-group row">
         <label for="optionText" class="col-sm-2 col-form-label">Nueva opción</label>
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="optionText" v-model="optionText">
+          <input type="text" class="form-control" id="optionText" v-model="optionText"
+                 autocomplete="off">
         </div>
         <div class="col">
           <button type="button" class="btn btn-outline-primary" @click="addOption">
@@ -84,10 +85,26 @@
         </template>
       </ul>
     </form>
+    <div class="row mt-3">
+      <div class="alert alert-success" role="alert" v-if="transactionHash">
+        Transacción exitosa. Verificar en
+        <small>
+          <a :href="`https://ropsten.etherscan.io/tx/${transactionHash}`" target="_blank">
+            {{transactionHash}}
+          </a>
+        </small>
+      </div>
+      <div class="alert alert-danger" role="alert" v-if="txError">
+        {{ txError }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+import * as constants from '@/store/constants';
+
 export default {
   name: 'Editor',
   data() {
@@ -103,7 +120,16 @@ export default {
       answers: [],
     };
   },
+  computed: {
+    ...mapState({
+      transactionHash: (state) => state.Hub.transactionHash,
+      txError: (state) => state.Hub.txError,
+    }),
+  },
   methods: {
+    ...mapActions({
+      deployQuiz: constants.HUB_NEW_QUIZ,
+    }),
     newQuestion() {
       this.statement = null;
       this.options = [];
@@ -132,6 +158,13 @@ export default {
     removeQuestion(idx) {
       this.questions.splice(idx, 1);
       this.answers.splice(idx, 1);
+    },
+    newQuiz() {
+      this.deployQuiz({
+        description: this.description,
+        questions: this.questions,
+        answers: this.answers,
+      });
     },
   },
 };
